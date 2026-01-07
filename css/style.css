@@ -1,0 +1,106 @@
+body {
+  margin: 0;
+  background: #f0f2f5;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #1c1e21;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.brand-logo {
+  height: 36px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tabs button {
+  border: 1px solid #ccd0d5;
+  background: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.tabs .active {
+  background: #e7f3ff;
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.kpi-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi {
+  background: #fff;
+  border: 1px solid #dadde1;
+  border-radius: 8px;
+  padding: 14px;
+  flex: 1;
+}
+
+.kpi strong {
+  display: block;
+  font-size: 32px;
+  margin-top: 6px;
+}
+
+.kpi em {
+  font-size: 14px;
+  color: #2e7d32;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #dadde1;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.side-info {
+  display: flex;
+  gap: 40px;
+  margin-top: 12px;
+}
+
+.side-info span {
+  font-size: 14px;
+  color: #65676b;
+}
+
+.side-info strong {
+  font-size: 20px;
+}
+
+.top-content {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.top-content img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.footer {
+  font-size: 13px;
+  color: #65676b;
+}

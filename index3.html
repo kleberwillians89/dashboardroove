@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roove • Dashboard (Out–Dez/2025)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+
+  <style>
+    :root{
+      --bg:#f0f2f5;
+      --card:#ffffff;
+      --border:#dadde1;
+      --text:#1c1e21;
+      --muted:#65676b;
+      --blue:#1877f2;
+      --blueLight:#8ecaff;
+      --grid:#e4e6eb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:1120px;margin:22px auto;padding:0 16px}
+
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:14px;
+    }
+    header .left{display:flex;align-items:center;gap:10px}
+    header img{height:34px}
+    .pillRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+    .btn{
+      padding:9px 12px;border-radius:999px;border:1px solid var(--border);
+      background:#fff;cursor:pointer;font-size:14px;color:var(--text);
+    }
+    .btn.active{border-color:var(--blue);color:var(--blue);background:#e7f3ff}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+    .titleRow{
+      display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap
+    }
+    .titleRow h2{margin:0;font-size:18px;font-weight:750}
+    .sub{font-size:13px;color:var(--muted);line-height:1.5}
+
+    .kpis{
+      display:grid;grid-template-columns:repeat(4,1fr);
+      gap:12px;margin-top:12px;
+    }
+    .kpi{
+      border:1px solid var(--grid);
+      border-radius:12px;
+      padding:12px;
+    }
+    .kpi .label{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .kpi .val{font-size:30px;font-weight:650;line-height:1}
+
+    .gridCharts{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;
+    }
+    .mini{
+      border:1px solid var(--grid);
+      border-radius:12px;
+      padding:12px;
+    }
+    .mini h3{margin:0 0 8px;font-size:14px;font-weight:700}
+    .chartWrap{height:180px}
+
+    .sectionTitle{margin:0;font-size:16px;font-weight:750}
+    /* você usa section-title no HTML — agora tem CSS */
+    .section-title{margin:0 0 10px;font-size:18px;font-weight:800}
+
+    .contentWrap{display:none}
+    .contentWrap.active{display:block}
+
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--grid);
+      border-radius:12px;
+      margin-top:12px;
+      background:#fff;
+    }
+    .table th,.table td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--grid);
+      vertical-align:top;
+      font-size:13px;
+    }
+    .table th{background:#f7f8fa;color:#111;font-weight:700;text-align:left}
+    .table tr:last-child td{border-bottom:none}
+    .nowrap{white-space:nowrap}
+    .link a{color:var(--blue);text-decoration:none;font-weight:700}
+    .link a:hover{text-decoration:underline}
+    .badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--grid);
+      font-size:12px;color:var(--muted);
+      background:#fff;
+    }
+    .thumb{
+      width:54px;height:54px;border-radius:10px;border:1px solid var(--grid);
+      background:#f7f8fa;display:inline-flex;align-items:center;justify-content:center;
+      color:var(--muted);font-size:12px;
+    }
+
+    @media(max-width:980px){
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .gridCharts{grid-template-columns:1fr}
+      .table th:nth-child(3), .table td:nth-child(3){display:none}
+    }
+
+    .images-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      margin-top:10px;
+    }
+    .images-grid img{
+      width:100%;
+      border-radius:10px;
+      border:1px solid #dadde1;
+      object-fit:cover;
+      background:#fff;
+      min-height:110px;
+    }
+    @media(max-width:900px){
+      .images-grid{grid-template-columns:repeat(2,1fr)}
+    }
+
+    .monthBlock{margin-top:14px}
+    .monthBlock h3{margin:0 0 8px;font-size:15px;font-weight:800}
+
+    .card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.container{
+  max-width:980px;
+  margin:24px auto;
+  padding:0 16px;
+}
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.title{
+  font-size:22px;
+  font-weight:700; /* menos pesado */
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <div class="left">
+      <img src="image/logoroove.jpg" alt="Roove" onerror="this.style.display='none'">
+      <div>
+        <div style="font-weight:800;font-size:15px;">Roove • Dashboard</div>
+        <div class="sub">Outubro, Novembro e Dezembro de 2025 (Meta Business Suite export)</div>
+      </div>
+    </div>
+
+    <div class="pillRow">
+      <button class="btn active" id="btnFeed">Posts</button>
+      <button class="btn" id="btnStories">Stories</button>
+    </div>
+  </header>
+
+  <!-- MESES: um abaixo do outro -->
+  <div id="months"></div>
+
+  
+
+  <!-- IMAGENS -->
+  <section class="card">
+    <h2 class="section-title">Conteúdos em destaques</h2>
+    <div class="sub">Imagens de apoio para apresentação (top conteúdos).</div>
+
+    <div class="images-grid">
+      <img src="image/20.jpg" onerror="this.style.opacity=.25">
+      <img src="image/roove2.jpg" onerror="this.style.opacity=.25">
+      <img src="image/ROOVE 1 .jpg" onerror="this.style.opacity=.25">
+      <img src="image/roove.jpg" onerror="this.style.opacity=.25">
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="titleRow">
+      <h2>Top Conteúdos</h2>
+      <span class="badge" id="contentBadge">Mostrando: Posts</span>
+    </div>
+    <div class="sub">
+      Seleção automática baseada em <b>Visualizações</b> (mesma lógica prática da Meta para “mais vistos”).
+    </div>
+
+    <div id="wrapFeed" class="contentWrap active"></div>
+    <div id="wrapStories" class="contentWrap"></div>
+  </div>
+
+  <section class="card">
+    <h2 class="section-title">Stories em destaques</h2>
+    <div class="sub">Imagens de apoio para apresentação (top stories).</div>
+
+    <div class="images-grid">
+      <img src="image/storie1.png" onerror="this.style.opacity=.25">
+      <img src="image/storie2.png" onerror="this.style.opacity=.25">
+      <img src="image/storie3.png" onerror="this.style.opacity=.25">
+    </div>
+  </section>
+
+  <!-- CONTEÚDOS -->
+
+
+  <div class="card">
+    <div class="title">Fonte dos dados</div>
+    <p style="font-size:14px;color:#65676b;line-height:1.5;max-width:760px;margin:0;">
+      <p>
+      Todos os dados apresentados neste relatório foram extraídos diretamente do
+      <strong>Meta Business Suite</strong>, com base nos insights oficiais da plataforma para esta publicação específica.
+      <br><br>
+      </p>
+      As métricas consideram resultados orgânicos e de anúncios, conforme disponibilizado pela Meta no período analisado.
+    </p>
+  </div>
+
+</div>
+
+<script>
+/* ========= SÉRIES DIÁRIAS (REAIS) ========= */
+const SERIES = {
+  "2025-10": {
+    label: "Outubro/2025",
+    views: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,244,85,78,28,187,46,11,134,73,48,4,5],
+    reach: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,11,14,5,14,5,1,14,11,2,3,3],
+    interactions: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,8,13,2,13,6,0,21,6,2,0,0],
+    profile_visits: [0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,0,1,1,0,22,7,7,1,9,3,1,7,4,2,1,0]
+  },
+  "2025-11": {
+    label: "Novembro/2025",
+    views: [75,0,298,44,341,300,1,0,3,119,156,8,27,4,10,12,338,142,353,88,137,16,13,299,123,426,247,136,134,39],
+    reach: [2,0,39,16,137,90,1,1,2,3,17,4,5,3,2,4,24,19,18,3,20,9,9,19,7,247,135,95,95,36],
+    interactions: [0,0,22,2,46,13,0,0,0,0,12,1,1,0,0,0,13,6,7,1,13,3,0,29,5,35,5,35,0,0],
+    profile_visits: [2,0,12,1,8,8,0,0,0,4,6,0,1,0,1,1,13,5,11,2,2,1,0,12,3,5,3,0,2,0]
+  },
+  "2025-12": {
+    label: "Dezembro/2025",
+    views: [28,5,156,147,20,0,0,4,98,0,75,4,410,1,375,39,335,773,851,1310,541,90,13,2,45,3,79,17,80,42,8],
+    reach: [4,1,1,2,0,0,0,2,7,0,9,1,7,1,15,96,509,1044,1770,1512,397,10,5,2,2,0,10,7,1,10,3],
+    interactions: [1,0,0,0,0,0,0,0,4,0,6,1,24,0,37,48,19,10,16,27,1,7,1,0,0,1,8,3,0,5,1],
+    profile_visits: [1,0,5,3,1,0,0,0,1,0,1,0,19,0,18,1,17,25,23,46,11,3,1,0,2,0,2,0,2,1,0]
+  }
+};
+
+function sum(a){ return a.reduce((x,y)=>x+(Number(y)||0),0); }
+function fmt(n){ return (Number(n)||0).toLocaleString("pt-BR"); }
+
+/* ========= TOP POSTS (2 por mês) — DADOS REAIS (CSV) ========= */
+const TOP_POSTS = {
+  "Outubro/2025": [
+    {
+      "date": "20/10/2025", "time": "14:02",
+      "desc": "Para quem joga bonito até fora da quadra. #athleisure #wellness #wellnesslifestyle",
+      "type": "Imagem do Instagram",
+      "link": "https://www.instagram.com/p/DQC6DolFGcd/",
+      "views": 545, "reach": 48, "likes": 15, "shares": 2, "profile": 0, "replies": 0
+    },
+    {
+      "date": "20/10/2025", "time": "14:04",
+      "desc": "Roove é sobre o que nos move, e o que nos une. #wellness #athleisure",
+      "type": "Imagem do Instagram",
+      "link": "https://www.instagram.com/p/DQC6Pq8k7x2/",
+      "views": 542, "reach": 42, "likes": 15, "shares": 0, "profile": 0, "replies": 0
+    }
+  ],
+  "Novembro/2025": [
+    {
+      "date": "11/11/2025", "time": "13:01",
+      "desc": "Dentro da gente existe um mix: a versão ansiosa, a que come por estresse, a que quer sumir, e a que só quer o essencial rs! Se identificou com algum? Compartilha! ⬆️",
+      "type": "Carrossel do Instagram",
+      "link": "https://www.instagram.com/p/DRiL6m6kg-p/",
+      "views": 852, "reach": 363, "likes": 11, "shares": 8, "profile": 0, "replies": 0
+    },
+    {
+      "date": "03/11/2025", "time": "13:55",
+      "desc": "Mood board da semana (e sempre) #Roove #wellness #Athleisure #Mood #moodboards",
+      "type": "Imagem do Instagram",
+      "link": "https://www.instagram.com/p/DQsXF7-DhP8/",
+      "views": 682, "reach": 244, "likes": 22, "shares": 9, "profile": 0, "replies": 0
+    }
+  ],
+  "Dezembro/2025": [
+    {
+      "date": "17/12/2025", "time": "12:19",
+      "desc": "O skincare deixou de ser só rotina e virou tecnologia aplicada… comenta “SKINCARE”, se quer ser o primeiro a saber da novidade.",
+      "type": "Carrossel do Instagram",
+      "link": "https://www.instagram.com/p/DSSxp7hkat9/",
+      "views": 1723, "reach": 4957, "likes": 69, "shares": 0, "profile": 0, "replies": 0
+    },
+    {
+      "date": "11/12/2025", "time": "12:58",
+      "desc": "Quando o cuidado com a pele conta, a Roove cuida. #athleisure #skincare #skinwear",
+      "type": "Imagem do Instagram",
+      "link": "https://www.instagram.com/p/DSDz65Kkjif/",
+      "views": 326, "reach": 26, "likes": 5, "shares": 0, "profile": 0, "replies": 0
+    }
+  ]
+};
+
+/* ========= TOP STORIES (3 no total) — DADOS REAIS (CSV) ========= */
+const TOP_STORIES = [
+  {
+    "date": "17/11/2025", "time": "12:56",
+    "desc": "Vocês sabiam que o corpo tem memória muscular ?",
+    "type": "Story do Instagram",
+    "link": "https://www.instagram.com/stories/roove.oficial/3768103809886384243",
+    "views": 37, "reach": 19, "likes": 1, "shares": 0, "profile": 2, "replies": 0
+  },
+  {
+    "date": "18/11/2025", "time": "03:09",
+    "desc": "↓",
+    "type": "Story do Instagram",
+    "link": "https://www.instagram.com/stories/roove.oficial/3768533275158597549",
+    "views": 36, "reach": 17, "likes": 1, "shares": 0, "profile": 1, "replies": 2
+  },
+  {
+    "date": "17/11/2025", "time": "13:07",
+    "desc": "← Vem saber mais sobre essa memória muscular",
+    "type": "Story do Instagram",
+    "link": "https://www.instagram.com/stories/roove.oficial/3768109084391426463",
+    "views": 32, "reach": 16, "likes": 2, "shares": 0, "profile": 0, "replies": 0
+  }
+];
+
+function calcInteractions(x){
+  return (x.likes||0) + (x.shares||0) + (x.profile||0) + (x.replies||0);
+}
+
+/* ========= Render: Meses ========= */
+function monthCard(key){
+  const m = SERIES[key];
+  const totals = {
+    views: sum(m.views),
+    reach: sum(m.reach),
+    interactions: sum(m.interactions),
+    visits: sum(m.profile_visits)
+  };
+
+  const id = (s)=>`${key}-${s}`;
+
+  return `
+    <div class="card">
+      <div class="titleRow">
+        <h2>${m.label}</h2>
+        <span class="badge">Totais do mês</span>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="label">Visualizações</div><div class="val">${fmt(totals.views)}</div></div>
+        <div class="kpi"><div class="label">Alcance</div><div class="val">${fmt(totals.reach)}</div></div>
+        <div class="kpi"><div class="label">Interações</div><div class="val">${fmt(totals.interactions)}</div></div>
+        <div class="kpi"><div class="label">Visitas ao perfil</div><div class="val">${fmt(totals.visits)}</div></div>
+      </div>
+
+      <div class="gridCharts">
+        <div class="mini">
+          <h3>Visualizações (diário)</h3>
+          <div class="chartWrap"><canvas id="${id('views')}"></canvas></div>
+        </div>
+        <div class="mini">
+          <h3>Alcance (diário)</h3>
+          <div class="chartWrap"><canvas id="${id('reach')}"></canvas></div>
+        </div>
+        <div class="mini">
+          <h3>Interações (diário)</h3>
+          <div class="chartWrap"><canvas id="${id('interactions')}"></canvas></div>
+        </div>
+        <div class="mini">
+          <h3>Visitas ao perfil (diário)</h3>
+          <div class="chartWrap"><canvas id="${id('visits')}"></canvas></div>
+        </div>
+      </div>
+
+      <div class="sub" style="margin-top:10px;">
+        Pico do mês aparece naturalmente nos gráficos (linha azul).
+      </div>
+    </div>
+  `;
+}
+
+function renderMonths(){
+  const el = document.getElementById("months");
+  const keys = ["2025-10","2025-11","2025-12"];
+  el.innerHTML = keys.map(monthCard).join("");
+
+  keys.forEach(key=>{
+    const labels = Array.from({length: SERIES[key].views.length}, (_,i)=>String(i+1));
+    makeLine(`${key}-views`, labels, SERIES[key].views);
+    makeLine(`${key}-reach`, labels, SERIES[key].reach);
+    makeLine(`${key}-interactions`, labels, SERIES[key].interactions);
+    makeLine(`${key}-visits`, labels, SERIES[key].profile_visits);
+  });
+}
+
+function makeLine(canvasId, labels, data){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+
+  new Chart(ctx,{
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        data,
+        borderColor:"#1877f2",
+        borderWidth:3,
+        tension:.35,
+        pointRadius:0
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{maxTicksLimit:10}},
+        y:{beginAtZero:true,grid:{color:"#e4e6eb"},ticks:{maxTicksLimit:5}}
+      }
+    }
+  });
+}
+
+/* ========= Render: Top Conteúdos ========= */
+function renderTopPosts(){
+  const wrap = document.getElementById("wrapFeed");
+
+  wrap.innerHTML = Object.entries(TOP_POSTS).map(([month, items])=>{
+    const rows = items.map(p=>{
+      const inter = calcInteractions(p);
+      return `
+        <tr>
+          <td class="nowrap">${p.date}<br><span class="sub">${p.time}</span></td>
+          <td><div class="thumb">Post</div></td>
+          <td>${p.desc}</td>
+          <td class="nowrap">👁 ${fmt(p.views)}<br><span class="sub">Alc: ${fmt(p.reach)}</span></td>
+          <td class="nowrap">❤️ ${fmt(p.likes)}<br><span class="sub">Int: ${fmt(inter)}</span></td>
+          <td class="link"><a href="${p.link}" target="_blank" rel="noopener">Abrir</a></td>
+        </tr>
+      `;
+    }).join("");
+
+    return `
+      <div class="monthBlock">
+        <div class="titleRow">
+          <div class="sectionTitle">${month} • Top 2 Posts</div>
+          <span class="badge">${items.length} itens</span>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="nowrap">Data</th>
+              <th>Tipo</th>
+              <th>Descrição</th>
+              <th class="nowrap">Views / Alc.</th>
+              <th class="nowrap">Curtidas / Interações</th>
+              <th class="nowrap">Link</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderTopStories(){
+  const wrap = document.getElementById("wrapStories");
+
+  const rows = TOP_STORIES.map(s=>{
+    const inter = calcInteractions(s);
+    return `
+      <tr>
+        <td class="nowrap">${s.date}<br><span class="sub">${s.time}</span></td>
+        <td><div class="thumb">Story</div></td>
+        <td>${s.desc}</td>
+        <td class="nowrap">👁 ${fmt(s.views)}<br><span class="sub">Alc: ${fmt(s.reach)}</span></td>
+        <td class="nowrap">❤️ ${fmt(s.likes)}<br><span class="sub">Int: ${fmt(inter)}</span></td>
+        <td class="link"><a href="${s.link}" target="_blank" rel="noopener">Abrir</a></td>
+      </tr>
+    `;
+  }).join("");
+
+  wrap.innerHTML = `
+    <div class="monthBlock">
+      <div class="titleRow">
+        <div class="sectionTitle">Top 3 Stories</div>
+        <span class="badge">${TOP_STORIES.length} itens</span>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="nowrap">Data</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th class="nowrap">Views / Alc.</th>
+            <th class="nowrap">Curtidas / Interações</th>
+            <th class="nowrap">Link</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      <div class="sub" style="margin-top:10px;">
+        Interações (stories) = curtidas + compartilhamentos + visitas ao perfil + respostas.
+      </div>
+    </div>
+  `;
+}
+
+/* ========= Toggle Buttons ========= */
+const btnFeed = document.getElementById("btnFeed");
+const btnStories = document.getElementById("btnStories");
+const wrapFeed = document.getElementById("wrapFeed");
+const wrapStories = document.getElementById("wrapStories");
+const badge = document.getElementById("contentBadge");
+
+btnFeed.addEventListener("click", ()=>{
+  btnFeed.classList.add("active");
+  btnStories.classList.remove("active");
+  wrapFeed.classList.add("active");
+  wrapStories.classList.remove("active");
+  badge.textContent = "Mostrando: Posts";
+});
+
+btnStories.addEventListener("click", ()=>{
+  btnStories.classList.add("active");
+  btnFeed.classList.remove("active");
+  wrapStories.classList.add("active");
+  wrapFeed.classList.remove("active");
+  badge.textContent = "Mostrando: Stories";
+});
+
+/* ========= INIT ========= */
+renderMonths();
+renderTopPosts();
+renderTopStories();
+</script>
+</body>
+</html>

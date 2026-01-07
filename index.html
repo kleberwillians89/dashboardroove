@@ -2,476 +2,53 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8">
-<title>Insights do post</title>
+<title>Roove • Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-
 <style>
-:root{
-  --bg:#f0f2f5;
-  --card:#ffffff;
-  --border:#dadde1;
-  --text:#1c1e21;
-  --muted:#65676b;
-  --blue:#8ecaff;
-  --grey:#cfd3d8;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-family: Helvetica, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-.container{
-  max-width:980px;
-  margin:24px auto;
-  padding:0 16px;
+  background:#f0f2f5;
 }
 .card{
   background:#fff;
-  border:1px solid var(--border);
+  border-radius:16px;
+  padding:40px;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.08);
+}
+button{
+  margin-top:24px;
+  padding:14px 26px;
+  font-size:16px;
+  border:none;
   border-radius:10px;
-  padding:18px;
-  margin-bottom:16px;
-}
-.title{
-  font-size:22px;
-  font-weight:700; /* menos pesado */
-  margin-bottom:14px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-/* KPIs */
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-}
-.kpi h4{
-  margin:0 0 6px;
-  font-size:14px;
-  font-weight:600;
-  color:var(--muted);
-}
-.kpi span{
-  font-size:40px;
-  font-weight:500; /* menos negrito */
-}
-
-/* Publicação */
-.images{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-.images img{
-  width:100%;
-  border-radius:8px;
-  border:1px solid var(--border);
-}
-
-/* Barras org x ads */
-.bar{ margin-top:12px; }
-.bar-label{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:6px;
-  color:var(--text);
-}
-.track{
-  height:12px;
-  background:#e4e6eb;
-  border-radius:999px;
-  overflow:hidden;
-  display:flex;
-}
-.org{background:#bfe3ff}
-.ads{background:#4f86b9}
-
-/* ===== Fix definitivo Chart.js (evita esticar) ===== */
-.chartWrap{
-  height: 320px;
-  width: 100%;
-}
-.chartWrap.small{
-  height: 280px;
-}
-.chartWrap canvas{
-  width: 100% !important;
-  height: 100% !important;
-  display:block;
-}
-
-/* Legenda Público */
-.legendRow{
-  display:flex;
-  gap:30px;
-  align-items:center;
-  justify-content:center;
-  margin-top:10px;
-}
-.legendItem{display:flex;align-items:center;gap:10px}
-.legendSwatch{width:22px;height:18px;border-radius:4px}
-.subTitle{
-  font-size:22px;
-  font-weight:700;
-  margin-top:8px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-/* ===== Tooltip estilo Meta ===== */
-.meta-tooltip{
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.infoDot{
-  width:16px;height:16px;border-radius:50%;
-  border:1px solid #ccd0d5;
-  color:#65676b;
-  font-size:11px;
-  font-weight:700;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  background:#1877f2;
+  color:#fff;
   cursor:pointer;
-  background:#fff;
-  line-height:1;
 }
-.meta-tooltip-box{
-  position:absolute;
-  top:26px;
-  left:0;
-  width:420px;
-  background:#fff;
-  border:1px solid #dadde1;
-  border-radius:10px;
-  padding:14px 16px;
-  box-shadow:0 10px 28px rgba(0,0,0,.14);
-  font-size:14px;
-  line-height:1.55;
-  color:#1c1e21;
-  z-index:9999;
-  display:none;
-  font-weight:400;
-}
-.meta-tooltip-box strong{
-  display:block;
-  margin-bottom:6px;
-  font-size:15px;
-  font-weight:700;
-}
-.meta-tooltip:hover .meta-tooltip-box{ display:block; }
-@media(max-width:520px){
-  .meta-tooltip-box{ width:calc(100vw - 70px) }
-}
-
-/* Interações (grid) */
-.grid4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:22px;
-  margin-top:10px;
-}
-.metricTitle{
-  font-size:18px;
-  font-weight:700; /* menos pesado */
-  margin-bottom:8px;
-}
-.metricValue{
-  font-size:54px;
-  font-weight:500;
-}
-.metricNote{
-  font-size:14px;
-  color:var(--muted);
-  margin-top:4px;
-}
-
-/* Responsivo geral */
-@media(max-width:900px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .images{grid-template-columns:1fr}
-  .grid4{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:520px){
-  .grid4{grid-template-columns:1fr}
-}
+button:hover{opacity:.9}
 </style>
 </head>
-
 <body>
-<div class="container">
 
-  <!-- PUBLICAÇÃO -->
-  <div class="card">
-    <div class="title">Publicação</div>
-    <div class="images">
-      <img src="image/20.jpg" alt="Criativo 1">
-      <img src="image/21.jpg" alt="Criativo 2">
-      <img src="image/22.jpg" alt="Criativo 3">
-    </div>
-  </div>
+<div class="card">
+  <img src="image/logoroove.jpg" style="max-width:160px">
+  <h2>Dashboard de Performance</h2>
+  <p>Insights oficiais • Instagram</p>
 
-  <!-- INTERAÇÕES (GRANDE) -->
-  <div class="card">
-    <div class="title" style="font-size:30px;font-weight:800;margin-bottom:14px;">
-      <span class="meta-tooltip">
-        Interações líquidas
-        <span class="infoDot">i</span>
-        <div class="meta-tooltip-box">
-          <strong>Interações líquidas</strong>
-          Soma das ações realizadas no post (curtidas e reações, comentários, salvamentos e compartilhamentos),
-          conforme os insights disponibilizados pela Meta.
-        </div>
-      </span>
-    </div>
+  <button onclick="location.href='index3.html'">
+    Dashboard Instagram
+  </button>
 
-    <div style="font-size:54px;font-weight:650;margin:0 0 10px;">100</div>
-
-    <div class="grid4">
-      <div>
-        <div class="metricTitle">Curtidas e reações</div>
-        <div class="metricValue">69</div>
-        <div class="metricNote">63 de anúncios</div>
-      </div>
-      <div>
-        <div class="metricTitle">Comentários</div>
-        <div class="metricValue">28</div>
-        <div class="metricNote">6 de anúncios</div>
-      </div>
-      <div>
-        <div class="metricTitle">Compartilhamentos</div>
-        <div class="metricValue">0</div>
-        <div class="metricNote">0 de anúncios</div>
-      </div>
-      <div>
-        <div class="metricTitle">Salvamentos</div>
-        <div class="metricValue">3</div>
-        <div class="metricNote">3 de anúncios</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- VISÃO GERAL -->
-  <div class="card">
-    <div class="title">Visão geral</div>
-    <div class="kpis">
-      <div class="kpi"><h4>Visualizações</h4><span>1.721</span></div>
-      <div class="kpi"><h4>Alcance</h4><span>4.957</span></div>
-      <div class="kpi"><h4>Interações líquidas</h4><span>100</span></div>
-      <div class="kpi"><h4>Seguidores</h4><span>15</span></div>
-    </div>
-  </div>
-
-  <!-- VISUALIZAÇÕES -->
-  <div class="card">
-    <div class="title">
-      <span class="meta-tooltip">
-        Visualizações
-        <span class="infoDot">i</span>
-        <div class="meta-tooltip-box">
-          <strong>Visualizações do post</strong>
-          Número total de vezes que o conteúdo foi exibido. Pode incluir múltiplas visualizações pela mesma pessoa.
-          Inclui distribuição orgânica e de anúncios, conforme indicado pela Meta.
-        </div>
-      </span>
-    </div>
-
-    <div style="font-size:44px;font-weight:500;margin:6px 0 6px;">1.721</div>
-
-    <div class="chartWrap">
-      <canvas id="viewsChart"></canvas>
-    </div>
-
-    <div class="bar">
-      <div class="bar-label"><span><b>Orgânico</b></span><span><b>Anúncios</b></span></div>
-      <div class="track">
-        <div class="org" style="width:18%"></div>
-        <div class="ads" style="width:82%"></div>
-      </div>
-      <div class="bar-label" style="margin-top:8px;">
-        <span>304</span><span>1.417</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ALCANCE + PÚBLICO -->
-  <div class="card">
-    <div class="title">
-      <span class="meta-tooltip">
-        Alcance
-        <span class="infoDot">i</span>
-        <div class="meta-tooltip-box">
-          <strong>Alcance do post do Instagram</strong>
-          Esta métrica calcula o alcance da distribuição orgânica ou paga do seu post, inclusive se ele foi turbinado.
-          O alcance será contado apenas uma vez, mesmo que ocorra tanto por distribuição orgânica quanto paga.
-          <br><br>
-          Ela não inclui o alcance de quando seu post foi recompartilhado. Essa métrica é <b>estimada</b>.
-        </div>
-      </span>
-    </div>
-
-    <div style="font-size:44px;font-weight:500;margin:6px 0 6px;">4.957</div>
-
-    <div class="bar">
-      <div class="bar-label"><span><b>Orgânico</b></span><span><b>Anúncios</b></span></div>
-      <div class="track">
-        <div class="org" style="width:1%"></div>
-        <div class="ads" style="width:99%"></div>
-      </div>
-      <div class="bar-label" style="margin-top:8px;">
-        <span>36</span><span>4.924</span>
-      </div>
-    </div>
-
-    <div style="margin-top:18px; font-size:30px; font-weight:800;">Público</div>
-
-    <div class="subTitle">
-      <span class="meta-tooltip">
-        Faixa etária e gênero
-        <span class="infoDot">i</span>
-        <div class="meta-tooltip-box">
-          <strong>Faixa etária e gênero</strong>
-          Distribuição estimada do público alcançado por idade e gênero para esta publicação,
-          conforme os insights disponibilizados pela Meta.
-        </div>
-      </span>
-    </div>
-
-    <div class="chartWrap small" style="margin-top:10px;">
-      <canvas id="chartAudience"></canvas>
-    </div>
-
-    <div class="legendRow">
-      <div class="legendItem">
-        <span class="legendSwatch" style="background:#bfe3ff"></span>
-        <div>
-          <div style="color:#1c1e21;font-weight:700;font-size:24px;">Mulheres</div>
-          <div style="font-size:18px;color:#65676b;">74,3%</div>
-        </div>
-      </div>
-
-      <div class="legendItem">
-        <span class="legendSwatch" style="background:#4f86b9"></span>
-        <div>
-          <div style="color:#1c1e21;font-weight:700;font-size:24px;">Homens</div>
-          <div style="font-size:18px;color:#65676b;">25,7%</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SEGUIDORES -->
-  <div class="card">
-    <div class="title">
-      <span class="meta-tooltip">
-        Seguidores
-        <span class="infoDot">i</span>
-        <div class="meta-tooltip-box">
-          <strong>Seguidores</strong>
-          Número de pessoas que começaram a seguir o perfil como resultado atribuído a esta publicação,
-          conforme os insights disponíveis na Meta. Pode incluir orgânico e anúncios.
-        </div>
-      </span>
-    </div>
-
-    <div style="font-size:44px;font-weight:500;margin:6px 0 6px;">15</div>
-
-    <div class="bar">
-      <div class="bar-label"><span><b>Orgânico</b></span><span><b>Anúncios</b></span></div>
-      <div class="track">
-        <div class="org" style="width:0%"></div>
-        <div class="ads" style="width:100%"></div>
-      </div>
-      <div class="bar-label" style="margin-top:8px;">
-        <span>0</span><span>15</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- FONTE -->
-  <div class="card">
-    <div class="title">Fonte dos dados</div>
-    <p style="font-size:14px;color:#65676b;line-height:1.5;max-width:760px;margin:0;">
-      Todos os dados apresentados neste relatório foram extraídos diretamente do
-      <strong>Meta Business Suite</strong>, com base nos insights oficiais da plataforma para esta publicação específica.
-      <br><br>
-      As métricas consideram resultados orgânicos e de anúncios, conforme disponibilizado pela Meta no período analisado.
-    </p>
-  </div>
-
+  <button onclick="location.href='index2.html'">
+    Dashboard Trafego Pago
+  </button>
 </div>
 
-<script>
-/* Blindagem: se o chart existir, destrói antes de criar (evita bug de resize em hot reload) */
-function safeDestroy(id){
-  const existing = Chart.getChart(id);
-  if(existing) existing.destroy();
-}
-
-/* Views chart */
-safeDestroy("viewsChart");
-new Chart(document.getElementById("viewsChart"),{
-  type:"line",
-  data:{
-    labels:["15 min","9 h","1 d 6 h","7 d"],
-    datasets:[
-      {data:[10,40,180,1721],borderColor:"#8ecaff",borderWidth:4,tension:.4,pointRadius:0},
-      {data:[8,30,90,260],borderColor:"#cfd3d8",borderWidth:4,tension:.4,pointRadius:0}
-    ]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{beginAtZero:true, grid:{color:"#e5e7eb"}},
-      x:{grid:{display:false}}
-    }
-  }
-});
-
-/* Audience chart */
-safeDestroy("chartAudience");
-const audienceLabels = ["18–24","25–34","35–44","45–54","55–64","65+"];
-const mulheres = [16, 34, 13, 7, 3, 1];
-const homens   = [7,  12, 4,  2, 1, 1];
-
-new Chart(document.getElementById("chartAudience"), {
-  type: "bar",
-  data: {
-    labels: audienceLabels,
-    datasets: [
-      { label: "Mulheres", data: mulheres, backgroundColor: "#bfe3ff", borderRadius: 6, barThickness: 44 },
-      { label: "Homens",   data: homens,   backgroundColor: "#4f86b9", borderRadius: 6, barThickness: 44 }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: {
-        beginAtZero: true,
-        suggestedMax: 40,
-        ticks: { stepSize: 10, color:"#1c1e21", font:{ size:18 } },
-        grid: { color:"#e5e7eb" }
-      },
-      x: {
-        ticks: { color:"#1c1e21", font:{ size:22 } },
-        grid: { display:false }
-      }
-    }
-  }
-});
-</script>
 </body>
 </html>
